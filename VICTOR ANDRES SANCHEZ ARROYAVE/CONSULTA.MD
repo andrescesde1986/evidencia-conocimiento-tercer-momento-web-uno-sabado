@@ -216,3 +216,130 @@ Propósito General: Indicar que el servidor falló al intentar procesar una soli
 Qué indican: "Yo (el servidor) he cometido un error".
 
 Ejemplo: 500 Internal Server Error. Un error genérico y muy común que indica que algo salió mal en el servidor, pero no se especifica qué. Otro es 503 Service Unavailable, que significa que el servidor no está disponible (por sobrecarga o mantenimiento).
+
+
+### Pregunta 4: Las Promesas (La solución elegante)
+
+* **4.1.** ¿Qué es una **Promesa (`Promise`)** en JavaScript? Describe detalladamente sus tres estados posibles: `pending`, `fulfilled` y `rejected`.
+* **4.2.** ¿Cómo resuelven las promesas el problema del "Callback Hell"? Explica el papel que juegan los métodos `.then()`, `.catch()` y `.finally()` en el manejo de una promesa.
+
+**[ESPACIO PARA TU RESPUESTA 4]**
+**[4.1] Una Promesa es un objeto JavaScript que representa la terminación o el fracaso eventual de una operación asíncrona y su resultado value. Es como hacer un "pacto" con el código: "Prometo devolverte un valor en el futuro, ya sea un resultado exitoso o un error".
+
+Una promesa puede estar en uno de estos tres estados:
+
+pending (pendiente):
+
+Estado inicial. La operación asíncrona aún no ha terminado.
+
+La promesa no se ha cumplido ni rechazado todavía.
+
+Es como un paquete que acabas de pedir en línea: sabes que viene, pero aún no llega.
+
+fulfilled (cumplida) / resolved (resuelta):
+
+La operación asíncrona se completó con éxito.
+
+La promesa ahora tiene un valor de resolución (el resultado que esperábamos).
+
+Siguiendo la analogía: ¡El paquete llegó y contiene exactamente lo que pediste!
+
+rejected (rechazada):
+
+La operación asíncrona falló.
+
+La promesa ahora tiene un motivo del rechazo (un error que explica qué salió mal).
+
+En la analogía: Recibiste una notificación del correo diciendo que el paquete se perdió o llegó dañado.
+
+Una vez que una promesa sale del estado pending y pasa a fulfilled o rejected, su estado ya NO puede cambiar. Es decir, una promesa es "inmutable" después de resolverse o rechazarse.
+
+**[4.2] Las promesas resuelven el "Callback Hell" mediante el encadenamiento (chaining), que permite escribir código asíncrono de forma vertical y secuencial, en lugar de anidarlo horizontalmente. Esto hace que el flujo sea mucho más legible y fácil de seguir.
+
+Los métodos clave para este encadenamiento son:
+
+.then(): Se encadena a una promesa y se ejecuta solo si la promesa se cumple (fulfilled). Recibe el valor de resolución como argumento. Crucialmente, .then() siempre devuelve una NUEVA promesa, lo que permite seguir encadenando.
+
+.catch(): Se encadena (generalmente al final) y se ejecuta solo si la promesa es rechazada (rejected) o si cualquier .then() anterior lanza un error. Recibe el motivo del error. Atrapa errores de toda la cadena de promesas en un solo lugar.
+
+.finally(): Se ejecuta siempre, sin importar si la promesa se cumplió o se rechazó. Es útil para código de limpieza o acciones finales (como detrar un loader), ya que no recibe ningún argumento.
+
+Demostración: Del Infierno al Cielo
+
+Vamos a reescribir el ejemplo del "Callback Hell" del café usando promesas
+
+// Ahora nuestras funciones devuelven Promesas
+function calentarAgua() {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve("Agua caliente lista"), 1000);
+    });
+}
+
+function molerGranos() {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve("Granos molidos listos"), 500);
+    });
+}
+
+function mezclarIngredientes(agua, granos) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Café mezclado con ${agua} y ${granos}`), 300);
+    });
+}
+
+function servirEnTaza(cafe) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`¡${cafe} en la taza!`), 200);
+    });
+}
+
+function añadirAzucar(cafe) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`☕ ${cafe} con azúcar`), 150);
+    });
+}
+
+// ¡Aquí está la magia! Cadena de .then() en lugar de anidación.
+function hacerCafe() {
+    return calentarAgua() // Paso 1: Calentar agua
+        .then((aguaCaliente) => {
+            // Paso 2: Cuando el agua esté lista, moler granos
+            return molerGranos().then((granosMolidos) => {
+                // Combinamos los resultados de los dos pasos anteriores
+                return { aguaCaliente, granosMolidos };
+            });
+        })
+        .then((ingredientes) => {
+            // Paso 3: Mezclar los ingredientes
+            return mezclarIngredientes(ingredientes.aguaCaliente, ingredientes.granosMolidos);
+        })
+        .then((cafeMezclado) => {
+            // Paso 4: Servir en taza
+            return servirEnTaza(cafeMezclado);
+        })
+        .then((cafeServido) => {
+            // Paso 5: Añadir azúcar
+            return añadirAzucar(cafeServido);
+        });
+        // Podríamos añadir un .catch() aquí para atrapar cualquier error en toda la cadena
+        // .catch((error) => {
+        //     console.error("Algo salió mal haciendo el café:", error);
+        // });
+}
+
+// Uso (tan simple como llamar a la función y usar .then() una vez)
+hacerCafe().then((cafeFinal) => {
+    console.log(cafeFinal); // ☕ ¡Café mezclado con Agua caliente lista y Granos molidos listos en la taza! con azúcar
+});
+
+¿Por qué esto es mejor?
+
+Legibilidad: El código fluye de arriba hacia abajo. Puedes leer los pasos de forma secuencial.
+
+Manejo Centralizado de Errores: Un solo .catch() al final puede atrapar cualquier error que ocurra en cualquier paso de la cadena.
+
+Composición: Es más fácil recombinar y reordenar los pasos.
+
+Mantenibilidad: Agregar un nuevo paso (como "añadir leche") es tan simple como insertar otro .then() en la cadena, sin afectar la estructura del resto.
+
+Las promesas no eliminan los callbacks (.then y .catch siguen siendo callbacks), pero organizan el flujo de una manera que es inherentemente más manejable y menos propensa a la pirámide del doom.
