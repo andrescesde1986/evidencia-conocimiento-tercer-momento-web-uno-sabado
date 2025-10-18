@@ -1,55 +1,30 @@
-# Cuestionario: Asincronismo y Consumo de APIs en JavaScript
-
-*A continuación, responde cada una de las siguientes preguntas. Recuerda hacer un commit por cada pregunta principal que completes.*
-
-### Pregunta 1: El Call Stack
-
 * **1.1.** ¿Qué es el **Call Stack** en JavaScript? Explícalo con una analogía del mundo real que facilite su comprensión.
 * **1.2.** ¿Qué significa el famoso error `Maximum call stack size exceeded` y cómo podrías provocarlo intencionalmente con un pequeño y simple fragmento de código? (Incluye el código de ejemplo).
 
 **[ESPACIO PARA TU RESPUESTA 1]**
+**[1.1] Imagina que el Call Stack (o "Pila de Llamadas") es como una pila de platos sucios en la cocina de un restaurante muy concurrido.
 
-### Pregunta 2: Los Callbacks
+Cada Plato es una Función: Cada vez que llamas a una función en tu código, es como si tomaras un plato nuevo y lo colocaras en lo alto de la pila. Este plato representa la tarea que se está ejecutando en ese momento exacto.
 
-* **2.1.** ¿Qué es un **"callback"** en JavaScript? Explica con tus propias palabras para qué se utilizaban principalmente en el contexto asíncrono.
-* **2.2.** Investiga en internet sobre el término **"Callback Hell"** o **"Pyramid of Doom"**. Pega un ejemplo de código que lo ilustre y explica por qué esa estructura es problemática para la legibilidad y el mantenimiento del código a largo plazo.
+LIFO: La pila funciona con el principio LIFO (Last-In, First-Out), es decir, el último plato que entra es el primero en salir. No puedes lavar un plato que está en medio de la pila sin antes lavar todos los que están encima.
 
-**[ESPACIO PARA TU RESPUESTA 2]**
+El Proceso:
 
+Llamar a una función: Pones un nuevo plato (función) encima de la pila.
 
+Ejecutar la función: Te enfocas en lavar ese plato de arriba de todo.
 
----
+Retornar de la función: Cuando la función termina (con un return o al llegar al final), el plato se lava y se retira de la pila. Ahora, el plato que está debajo se convierte en el "actual" y continúa su ejecución desde donde la había dejado.** 
 
-### Pregunta 3: El Mundo de las APIs 
+**[1.2] Este error es el equivalente a apilar tantos platos que se te caen todos y haces un desastre monumental en la cocina. El motor de JavaScript tiene un límite para evitar que esta pila sea infinita y se bloquee todo. Cuando superas ese límite, te lanza este error.
 
-* **3.1.** ¿Qué es una **API** ? Explícalo de forma sencilla, como si se lo estuvieras explicando a alguien que no es programador.
-* **3.2.** ¿Qué es una **API REST**? Describe brevemente sus características principales o principios.
-* **3.3.** ¿Qué es un **Endpoint**? En el contexto de la API de Rick and Morty (`https://rickandmortyapi.com/api/character/2`), ¿qué parte de la URL representa el endpoint y qué información específica esperarías obtener de él?
-* **3.4.** ¿Para qué sirve una herramienta como **Postman** o **Thunder Client** (la extensión de VS Code)? Describe su función principal en el desarrollo de software.
-* **3.5. Códigos de Estado HTTP:** Investiga y explica qué representa cada una de las siguientes familias de códigos de estado. Para cada familia, menciona al menos un ejemplo de código específico y lo que significa. 🆕
-    * **Codigos (100-199):** ¿Cuál es su propósito general?, ¿Qué indican este tipo de respuestas?
-    * **Codigos (200-299):** ¿Cuál es su propósito general?, ¿Qué indican este tipo de respuestas?
-    * **Codigos (300-399):** ¿Cuál es su propósito general?, ¿Qué indican este tipo de respuestas?
-    * **Codigos (400-499):** ¿Cuál es su propósito general?, ¿Qué indican este tipo de respuestas?
-    * **Codigos (500-599):** ¿Cuál es su propósito general?, ¿Qué indican este tipo de respuestas?
+¿Cómo provocarlo? Es muy fácil: creando una función recursiva sin caso base (o con un caso base que nunca se cumple). Es como una función que se llama a sí misma sin parar, apilándose una y otra vez hasta desbordar.
 
-**[ESPACIO PARA TU RESPUESTA 3]**
+Código de ejemplo (el desastre garantizado):
 
----
+function provocarDesbordamiento() {
+    provocarDesbordamiento(); // ¡Se llama a sí misma infinitamente!
+}
 
-### Pregunta 4: Las Promesas (La solución elegante)
+provocarDesbordamiento(); // Ejecuta esto y prepárate para el error.
 
-* **4.1.** ¿Qué es una **Promesa (`Promise`)** en JavaScript? Describe detalladamente sus tres estados posibles: `pending`, `fulfilled` y `rejected`.
-* **4.2.** ¿Cómo resuelven las promesas el problema del "Callback Hell"? Explica el papel que juegan los métodos `.then()`, `.catch()` y `.finally()` en el manejo de una promesa.
-
-**[ESPACIO PARA TU RESPUESTA 4]**
-
----
-
-### Pregunta 5: Async/Await (Azúcar sintáctico)
-
-* **5.1.** ¿Qué son las palabras clave **`async`** y **`await`**? ¿Qué problema vienen a solucionar o mejorar en comparación con el uso de `.then()` y `.catch()`?
-* **5.2.** A menudo se dice que `async/await` es "azúcar sintáctico" sobre las Promesas. ¿Qué significa esta afirmación? Explícalo con tus palabras.
-* **5.3.** Tomando como base el código que creaste para la pregunta 4.3, reescríbelo utilizando la sintaxis `async/await` y un bloque `try...catch` para manejar tanto el caso de éxito como el de error.
-
-**[ESPACIO PARA TU RESPUESTA 5]**
