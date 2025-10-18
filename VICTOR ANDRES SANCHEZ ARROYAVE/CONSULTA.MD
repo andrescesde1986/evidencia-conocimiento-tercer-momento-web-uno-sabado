@@ -28,3 +28,72 @@ function provocarDesbordamiento() {
 
 provocarDesbordamiento(); // Ejecuta esto y prepárate para el error.
 
+### Pregunta 2: Los Callbacks
+
+* **2.1.** ¿Qué es un **"callback"** en JavaScript? Explica con tus propias palabras para qué se utilizaban principalmente en el contexto asíncrono.
+* **2.2.** Investiga en internet sobre el término **"Callback Hell"** o **"Pyramid of Doom"**. Pega un ejemplo de código que lo ilustre y explica por qué esa estructura es problemática para la legibilidad y el mantenimiento del código a largo plazo.
+
+**[ESPACIO PARA TU RESPUESTA 2]**
+
+**[2.1] Un callback es una función que se pasa como argumento a otra función, se espera que esta segunda función la ejecute en un momento posterior.
+
+**[2.2] En el contexto asíncrono, los callbacks eran la forma original y fundamental de manejar operaciones que no son inmediatas. Se utilizaban principalmente para decirle al motor de JavaScript:
+
+"Oye, haz esta tarea que va a tomar tiempo (como leer un archivo, hacer una petición a un servidor o esperar 5 segundos), y cuando termines, ejecuta esta función callback que te estoy pasando."
+
+De esta manera, el programa no se "bloquea" esperando a que la tarea lenta termine, sino que puede seguir ejecutando otro código. Cuando la tarea asíncrona finaliza, el callback se coloca en una cola (la "Callback Queue") y eventualmente es llevado al "Call Stack" para ser ejecutado. Esto es el corazón del Event Loop.
+
+El "Callback Hell" (Infierno de los Callbacks) o "Pyramid of Doom" (Pirámide de la Perdición) es un anti-patrón que surge cuando anidamos muchos callbacks asíncronos de forma consecutiva, uno dentro del otro, leading a un código con una sangría excesiva y muy difícil de leer, que se asemeja a una pirámide o a las paredes de un pozo.
+
+Ejemplo de Código (Un vistazo al averno):
+
+// Simulando una secuencia de pasos para hacer un café
+// Cada paso depende del anterior y es asíncrono.
+
+function hacerCafe(callback) {
+    calentarAgua(function(aguaCaliente) {
+        molerGranos(function(granosMolidos) {
+            mezclarIngredientes(aguaCaliente, granosMolidos, function(cafeMezclado) {
+                servirEnTaza(cafeMezclado, function(cafeServido) {
+                    añadirAzucar(cafeServido, function(cafeFinal) {
+                        callback(cafeFinal);
+                    });
+                });
+            });
+        });
+    });
+}
+
+// Funciones auxiliares (simuladas con setTimeout)
+function calentarAgua(callback) {
+    setTimeout(() => callback("Agua caliente lista"), 1000);
+}
+function molerGranos(callback) {
+    setTimeout(() => callback("Granos molidos listos"), 500);
+}
+function mezclarIngredientes(agua, granos, callback) {
+    setTimeout(() => callback(`Café mezclado con ${agua} y ${granos}`), 300);
+}
+function servirEnTaza(cafe, callback) {
+    setTimeout(() => callback(`¡${cafe} en la taza!`), 200);
+}
+function añadirAzucar(cafe, callback) {
+    setTimeout(() => callback(`☕ ${cafe} con azúcar`), 150);
+}
+
+// Uso
+hacerCafe(function(cafe) {
+    console.log(cafe); // ☕ ¡Café mezclado con Agua caliente lista y Granos molidos listos en la taza! con azúcar
+});
+
+¿Por qué esta estructura es problemática?
+
+Pésima Legibilidad: El código se va "comiendo" hacia la derecha, formando una pirámide que es muy difícil de seguir visualmente. No se lee de forma natural (de arriba a abajo).
+
+Dificultad de Mantenimiento: Si quieres agregar, quitar o cambiar el orden de un paso, tienes que modificar varios niveles de anidación, lo que es propenso a errores.
+
+Manejo de Errores Complicado: En este modelo, manejar errores en cada paso se vuelve un suplicio. Tendrías que pasar y verificar un objeto de error en cada uno de los callbacks, duplicando aún más el código y la complejidad.
+
+Acoplamiento Excesivo: Cada paso está fuertemente acoplado al siguiente, haciendo el código rígido y poco reutilizable.
+
+Pérdida de Control: Se vuelve complicado realizar tareas como ejecutar algunas operaciones en paralelo o cancelar toda la secuencia si algo falla.
