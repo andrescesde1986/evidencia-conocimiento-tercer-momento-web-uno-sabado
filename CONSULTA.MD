@@ -9,14 +9,14 @@
 
 **[ESPACIO PARA TU RESPUESTA 1]**
 
----
-
 ### Pregunta 2: Los Callbacks
 
 * **2.1.** ¿Qué es un **"callback"** en JavaScript? Explica con tus propias palabras para qué se utilizaban principalmente en el contexto asíncrono.
 * **2.2.** Investiga en internet sobre el término **"Callback Hell"** o **"Pyramid of Doom"**. Pega un ejemplo de código que lo ilustre y explica por qué esa estructura es problemática para la legibilidad y el mantenimiento del código a largo plazo.
 
 **[ESPACIO PARA TU RESPUESTA 2]**
+
+
 
 ---
 
