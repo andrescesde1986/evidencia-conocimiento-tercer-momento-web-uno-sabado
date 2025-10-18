@@ -345,5 +345,101 @@ Mantenibilidad: Agregar un nuevo paso (como "añadir leche") es tan simple como 
 
 Las promesas no eliminan los callbacks (.then y .catch siguen siendo callbacks), pero organizan el flujo de una manera que es inherentemente más manejable y menos propensa a la pirámide del doom.
 
+### Pregunta 5: Async/Await (Azúcar sintáctico)
+
+* **5.1.** ¿Qué son las palabras clave **`async`** y **`await`**? ¿Qué problema vienen a solucionar o mejorar en comparación con el uso de `.then()` y `.catch()`?
+* **5.2.** A menudo se dice que `async/await` es "azúcar sintáctico" sobre las Promesas. ¿Qué significa esta afirmación? Explícalo con tus palabras.
+* **5.3.** Tomando como base el código que creaste para la pregunta 4.3, reescríbelo utilizando la sintaxis `async/await` y un bloque `try...catch` para manejar tanto el caso de éxito como el de error.
+
+**[ESPACIO PARA TU RESPUESTA 5]**
+
+**[5.1] Son dos palabras clave introducidas en ES2017 (ES8) que trabajan en conjunto para escribir código asíncrono de una manera que parezca síncrona.
+
+async: Se coloca delante de una función. Esto hace que la función siempre devuelva una Promesa. Si la función devuelve un valor normal, async lo envolverá automáticamente en una promesa resuelta.
+
+await: Solo puede usarse dentro de una función async. Hace que JavaScript espere (de forma no bloqueante) a que la promesa a su derecha se resuelva o rechace. Una vez resuelta, devuelve el valor resultante. Si es rechazada, await lanza el error, que podemos capturar.
+
+El problema que solucionan: Si bien las promesas con .then() eran una gran mejora sobre el "Callback Hell", todavía tenían un flujo un poco "saltado" y requerían el paso de funciones callback a .then() y .catch(). async/await mejora esto al permitirnos escribir el código en el mismo orden lógico en que se ejecuta, línea por línea, haciendo que sea mucho más intuitivo y fácil de razonar.
+
+**[5.2] Esta afirmación significa que async/await no agrega una funcionalidad nueva al lenguaje que no existiera ya con las Promesas. Por debajo, el motor de JavaScript está haciendo exactamente lo mismo: manejando promesas.
+
+La "magia" de async/await es puramente sintáctica: proporciona una forma mucho más limpia, clara y legible de escribir y trabajar con el mismo código basado en promesas. Es como un atajo o una forma más dulce ("azúcar") de escribir lo mismo.
+
+Analogía: Es la diferencia entre hacer un sandwich así:
+poner(pan, poner(queso, poner(jamon, pan))) (callbacks/.then anidados)
+y hacerlo así:
+pan
+queso
+jamon
+pan
+async/await te permite "espreadir" los ingredientes de tu lógica asíncrona de forma lineal.
+
+**[5.3] Aquí está el código de la pregunta 4.3, transformado usando async/await y try...catch. Las funciones auxiliares (calentarAgua, molerGranos, etc.) se mantienen igual porque ya devuelven promesas.
+
+// (Las funciones calentarAgua, molerGranos, etc., son las MISMAS de la Pregunta 4.3)
+// Todas devuelven una Promesa.
+
+// Versión ASYNC/AWAIT de la función principal
+async function hacerCafe() {
+    try {
+        // Paso 1: Esperar a que el agua se caliente
+        const aguaCaliente = await calentarAgua();
+        console.log("(Paso 1 listo)");
+
+        // Paso 2: Esperar a que los granos se muelan
+        const granosMolidos = await molerGranos();
+        console.log("(Paso 2 listo)");
+
+        // Paso 3: Mezclar los ingredientes (usamos los resultados de los pasos 1 y 2)
+        const cafeMezclado = await mezclarIngredientes(aguaCaliente, granosMolidos);
+        console.log("(Paso 3 listo)");
+
+        // Paso 4: Servir en la taza
+        const cafeServido = await servirEnTaza(cafeMezclado);
+        console.log("(Paso 4 listo)");
+
+        // Paso 5: Añadir azúcar
+        const cafeFinal = await añadirAzucar(cafeServido);
+        console.log("(Paso 5 listo)");
+
+        // Si todo sale bien, retornamos el resultado final
+        return cafeFinal;
+
+    } catch (error) {
+        // Este bloque CATCH captura CUALQUIER error que ocurra en
+        // CUALQUIER paso de arriba (cualquier 'await' que falle).
+        console.error("❌ ¡Catástrofe en la cafetería!: ", error);
+        // Podemos lanzar el error nuevamente, o devolver un valor por defecto
+        throw error; // Esto hará que la promesa devuelta por hacerCafe() sea rechazada
+    }
+}
+
+// Uso de la función async (tan limpio como parece)
+// Opción 1: Con .then (porque hacerCafe() devuelve una promesa)
+hacerCafe().then(cafe => {
+    console.log("¡Éxito! 🎉", cafe);
+}).catch(error => {
+    console.log("El café no llegó.", error);
+});
+
+// Opción 2: Usando otra función async (IIFE - Immediately Invoked Function Expression)
+(async () => {
+    try {
+        const miCafe = await hacerCafe();
+        console.log("¡Éxito! 🎉", miCafe);
+    } catch (error) {
+        console.log("El café no llegó.", error);
+    }
+})();
+
+Máxima Legibilidad: El código es secuencial y se lee de arriba a abajo, como si fuera síncrono. Es inmediatamente obvio qué paso sigue a cuál.
+
+Manejo de Errores Natural: Usamos try...catch, que es el mecanismo estándar y bien conocido para manejar errores en JavaScript, aplicado ahora al código asíncrono. Un solo bloque catch maneja cualquier falla en toda la secuencia.
+
+Menos "Ruido" Sintáctico: Elimina la necesidad de múltiples funciones callback y .then(), reduciendo la indentación y haciendo el código más limpio.
+
+Depuración más Fácil: Es más sencillo poner breakpoints y seguir el flujo de ejecución en las herramientas de desarrollo del navegador.
+
+async/await es hoy en día el estándar de facto para escribir código asíncrono limpio y mantenible en JavaScript.
 
 
